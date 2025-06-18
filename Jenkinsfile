@@ -31,7 +31,7 @@ pipeline {
 
         stage('Testing React App') {
             steps {
-                bat 'CI=true npm test'
+                bat 'set CI=true npm test'
             }
         }
 
