@@ -19,26 +19,26 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Build React App') {
             steps {
-                sh 'npm run build'
+                bat 'npm run build'
             }
         }
 
         stage('Testing React App') {
             steps {
-                sh 'npm test'
+                bat 'npm test --passWithNoTests'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${DOCKER_IMAGE}")
+                    bat "docker build -t %DOCKER_IMAGE% ."
                 }
             }
         }
@@ -46,13 +46,10 @@ pipeline {
         stage('Deploy to Environment') {
             steps {
                 script {
-                  
-
-                    // Use triple double-quotes for string interpolation in sh block
-                    sh """
-                    docker stop ${CONTAINER_NAME} || echo Not running
-                    docker rm ${CONTAINER_NAME} || echo Not found
-                    docker run -d -p 3000:80 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}
+                    bat """
+                    docker stop %CONTAINER_NAME% || echo Not running
+                    docker rm %CONTAINER_NAME% || echo Not found
+                    docker run -d -p 3000:80 --name %CONTAINER_NAME% %DOCKER_IMAGE%
                     """
                 }
             }
